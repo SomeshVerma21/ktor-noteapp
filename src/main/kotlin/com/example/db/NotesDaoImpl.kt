@@ -8,14 +8,22 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 class NotesDaoImpl : NotesDao {
     private fun resultToNote(row: ResultRow) = Note(
         nid = row[Notes.nid],
+        uid = row[Notes.uid],
         title = row[Notes.title],
-        story = row[Notes.story]
+        story = row[Notes.story],
+        created = row[Notes.created],
+        updated = row[Notes.updated],
+        backgroundColor = row[Notes.backgroundColor]
     )
 
     override suspend fun createNote(note: Note): Note?  = DatabaseFactory.dbQuery {
         val res = Notes.insert {
+            it[Notes.uid] = note.uid
             it[Notes.title] = note.title
             it[Notes.story] = note.story
+            it[Notes.created] = note.created
+            it[Notes.updated] = note.updated
+            it[Notes.backgroundColor] = note.backgroundColor
         }.resultedValues
 
         res?.singleOrNull()?.let(::resultToNote)

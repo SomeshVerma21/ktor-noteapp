@@ -26,8 +26,12 @@ class UserDaoImpl : UserDao {
         res?.singleOrNull()?.let (::resultRowToUser)
     }
 
-    override suspend fun getUser(uid:Int): User  =  DatabaseFactory.dbQuery {
-        Users.select(Users.uid eq uid).map ( ::resultRowToUser ).last()
+    override suspend fun getUser(uid:Int): User?  =  DatabaseFactory.dbQuery {
+        val user = Users.select(Users.uid eq uid).map ( ::resultRowToUser )
+        if (user.isEmpty())
+            return@dbQuery null
+        else
+            return@dbQuery user.last()
     }
 
 }
